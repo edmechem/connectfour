@@ -1,6 +1,6 @@
 .container {
 	margin: 20px auto;
-	width: 1000px;
+	width: 96%;
 	font-family: "Helvetica", Helvetica, Sans-Serif;
 }
 
@@ -16,5 +16,16 @@
 	margin: 10px;
 	border: 1px solid black;
 	border-radius: 50%;
+}
+
+.white {
 	background: white;
+}
+
+.red {
+	background: red;
+}
+
+.black {
+	background: black;
 }
