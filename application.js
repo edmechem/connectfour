@@ -18,14 +18,13 @@ var Game = function() {
         clickedPiece = $(this)[0];
         clickedClass = $(clickedPiece).attr("class");
         clickedColumn = clickedClass.charAt(clickedClass.indexOf("col") + 3);
-        var isValid = currentGame.isValidColumn(clickedColumn);
+        columnValues = currentGame.getColumnValues(clickedColumn);
+        var isValid = currentGame.isValidColumn();
 
         if (!isValid) {
           currentGame.displayInvalidColumnMessage();
         } else {
-          currentGame.updateStatusMessage("Clicked column = " + clickedColumn);
-          // it's a valid column, place their piece!
-          // currentGame.placePiece()
+          currentGame.placePiece();
         }
 
     });
@@ -33,7 +32,27 @@ var Game = function() {
   // end repeat loop here
 };
 
-// Game.prototype.placePiece
+Game.prototype.placePiece = function() {
+  row = "row" + currentGame.lowestOpenRow();
+  col = "col" + clickedColumn;
+  cssSelector = "." + row + "." + col;
+  if (player == "R") {
+    $(cssSelector).removeClass("white");
+    $(cssSelector).addClass("red");
+
+  } else {
+    $(cssSelector).removeClass("white");
+    $(cssSelector).addClass("black");
+
+  };
+};
+
+Game.prototype.lowestOpenRow = function() {
+  for (var i = 0; i < columnValues.length; i++) {
+    if (columnValues[i] != "") {return i-1;}
+  }
+  return i-1;
+};
 
 Game.prototype.displayInvalidColumnMessage = function() {
   var statusMessage = ""
@@ -42,8 +61,7 @@ Game.prototype.displayInvalidColumnMessage = function() {
   currentGame.updateStatusMessage(statusMessage);
 };
 
-Game.prototype.isValidColumn = function(column) {
-  var columnValues = currentGame.getColumnValues(clickedColumn);
+Game.prototype.isValidColumn = function() {
   var emptyPieces = columnValues.filter(function(piece) {return piece == ""});
   return emptyPieces.length > 0;
 };
@@ -56,12 +74,12 @@ Game.prototype.getColumnValues = function(column) {
 
 Game.prototype.buildBoard = function() {
   this.board = [
-    ["", "", "R", "", "", "", ""],
-    ["", "", "R", "", "", "", ""],
-    ["", "", "R", "", "", "", ""],
-    ["", "", "R", "", "", "", ""],
-    ["", "", "R", "", "", "", ""],
-    ["", "", "R", "", "", "", ""]
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "B"],
+    ["", "", "", "", "", "", "B"],
+    ["", "", "R", "", "", "", "B"],
+    ["", "B", "R", "", "", "", "B"],
+    ["", "B", "R", "", "", "", "B"]
   ];
 };
 
