@@ -3,34 +3,66 @@ $(document).ready(function(){
 });
 
 var Game = function() {
-  // var winner = "";
   this.buildBoard();
-  // repeat loop until someone wins, starts here
-    currentGame = this;
-    player = this.whoseTurn();
+  currentGame = this;
+  currentGame.winner = "";
+  currentGame.errorMessage = "";
+  // debugger;
+  evaluateTurnUpdateStatus();
+  clickHandler();
+};
+
+function evaluateTurnUpdateStatus () {
+  player = currentGame.whoseTurn();
+  // debugger;
+  if (currentGame.errorMessage != "") {
+    currentGame.updateStatusMessage(currentGame.errorMessage);
+  } else {
     var statusMessage = "";
     player == "R" ? statusMessage = "Red, " : statusMessage = "Black, ";
     statusMessage += "it's your turn! Click a column to play your piece."
-    this.updateStatusMessage(statusMessage);
-    this.updateMiniPiece(player);
-    $(".piece").on("click", function(event) {
-        event.preventDefault();
-        clickedPiece = $(this)[0];
-        clickedClass = $(clickedPiece).attr("class");
-        clickedColumn = clickedClass.charAt(clickedClass.indexOf("col") + 3);
-        columnValues = currentGame.getColumnValues(clickedColumn);
-        var isValid = currentGame.isValidColumn();
+    currentGame.updateStatusMessage(statusMessage);
+  };
+  currentGame.updateMiniPiece(player);
+}
 
-        if (!isValid) {
-          currentGame.displayInvalidColumnMessage();
-        } else {
-          currentGame.placePiece();
-        }
+function clickHandler () {
+  $(".piece").on("click", function(event) {
+      event.preventDefault();
+      clickedPiece = $(this)[0];
+      clickedClass = $(clickedPiece).attr("class");
+      clickedColumn = clickedClass.charAt(clickedClass.indexOf("col") + 3);
+      columnValues = currentGame.getColumnValues(clickedColumn);
+      var isValid = currentGame.isValidColumn();
+      if (!isValid) {
+        displayInvalidColumnMessage();
+      } else {
+        currentGame.errorMessage = "";
+        currentGame.placePiece();
+        currentGame.updateBoardArray();
+      }
+      evaluateTurnUpdateStatus();
+      evaluateWinner();
+  });
+}
 
-    });
+function evaluateWinner() {
 
-  // end repeat loop here
-};
+}
+
+
+
+
+Game.prototype.updateBoardArray = function() {
+  row = currentGame.lowestOpenRow();
+  col = parseInt(clickedColumn);
+
+  // console.log("Board before updating: ");
+  // console.log(currentGame.board);
+  // console.log("Row is: " + row + ", Col is: " + col + ", Player is: " + player);
+
+  currentGame.board[row][col] = player;
+}
 
 Game.prototype.placePiece = function() {
   row = "row" + currentGame.lowestOpenRow();
@@ -39,11 +71,9 @@ Game.prototype.placePiece = function() {
   if (player == "R") {
     $(cssSelector).removeClass("white");
     $(cssSelector).addClass("red");
-
   } else {
     $(cssSelector).removeClass("white");
     $(cssSelector).addClass("black");
-
   };
 };
 
@@ -54,11 +84,13 @@ Game.prototype.lowestOpenRow = function() {
   return i-1;
 };
 
-Game.prototype.displayInvalidColumnMessage = function() {
-  var statusMessage = ""
-  player == 'R' ? statusMessage += "Red, " : statusMessage += "Black, ";
-  statusMessage += "that's not a valid column! Please try again."
-  currentGame.updateStatusMessage(statusMessage);
+function displayInvalidColumnMessage () {
+  if (currentGame.errorMessage == "") {
+    player == 'R' ? currentGame.errorMessage += "Red, " : currentGame.errorMessage += "Black, ";
+    currentGame.errorMessage += "the column's full! Try a different one :)";
+    // debugger;
+    currentGame.updateStatusMessage(currentGame.errorMessage);
+  }
 };
 
 Game.prototype.isValidColumn = function() {
@@ -75,11 +107,11 @@ Game.prototype.getColumnValues = function(column) {
 Game.prototype.buildBoard = function() {
   this.board = [
     ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "B"],
-    ["", "", "", "", "", "", "B"],
-    ["", "", "R", "", "", "", "B"],
-    ["", "B", "R", "", "", "", "B"],
-    ["", "B", "R", "", "", "", "B"]
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""]
   ];
 };
 
