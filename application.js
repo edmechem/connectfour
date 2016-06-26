@@ -7,7 +7,6 @@ var Game = function() {
   currentGame = this;
   currentGame.winner = "";
   currentGame.errorMessage = "";
-  // debugger;
   evaluateTurnUpdateStatus();
   clickHandler();
 };
@@ -29,26 +28,92 @@ function evaluateTurnUpdateStatus () {
 function clickHandler () {
   $(".piece").on("click", function(event) {
       event.preventDefault();
-      clickedPiece = $(this)[0];
-      clickedClass = $(clickedPiece).attr("class");
-      clickedColumn = clickedClass.charAt(clickedClass.indexOf("col") + 3);
-      columnValues = currentGame.getColumnValues(clickedColumn);
-      var isValid = currentGame.isValidColumn();
-      if (!isValid) {
-        displayInvalidColumnMessage();
-      } else {
-        currentGame.errorMessage = "";
-        currentGame.placePiece();
-        currentGame.updateBoardArray();
+      if (currentGame.winner == "") {
+        clickedPiece = $(this)[0];
+        clickedClass = $(clickedPiece).attr("class");
+        clickedColumn = clickedClass.charAt(clickedClass.indexOf("col") + 3);
+        columnValues = currentGame.getColumnValues(clickedColumn);
+        var isValid = currentGame.isValidColumn();
+        if (!isValid) {
+          displayInvalidColumnMessage();
+        } else {
+          currentGame.errorMessage = "";
+          currentGame.placePiece();
+          currentGame.updateBoardArray();
+        }
+        evaluateWinner();
+        if (currentGame.winner != "") {
+          console.log("Winner is: " + currentGame.winner)
+          currentGame.updateStatusMessage("Congratulations, " + currentGame.winner + "! You Win!");
+        } else {
+          evaluateTurnUpdateStatus();
+        }
       }
-      evaluateTurnUpdateStatus();
-      evaluateWinner();
-  });
+    });
 }
 
 function evaluateWinner() {
+  evaluateHorizontalWin();
+  evaluateVerticalWin();
+  evaluateSlashDiagonalWin();
+  // evaluateBackSlashDiagonalWin();
+}
+
+function evaluateHorizontalWin() {
+  currentGame.board.forEach(function(row){
+    rowString = row.join('.');
+    console.log(rowString);
+    if (rowString.indexOf("R.R.R.R") != -1) {
+      currentGame.winner = "Red";
+    } else if (rowString.indexOf("B.B.B.B") != -1) {
+      currentGame.winner = "Black";
+    }
+  })
+}
+
+function transpose(array) {
+  return array[0].map(function (_, col) {
+    return array.map(function (row) {
+      return row[col];
+    });
+  });
+}
+
+function evaluateVerticalWin() {
+  var board = transpose(currentGame.board)
+  board.forEach(function(row){
+    rowString = row.join('.');
+    console.log(rowString);
+    if (rowString.indexOf("R.R.R.R") != -1) {
+      currentGame.winner = "Red";
+    } else if (rowString.indexOf("B.B.B.B") != -1) {
+      currentGame.winner = "Black";
+    }
+  })
+}
+
+function evaluateSlashDiagonalWin() {
+  var board = currentGame.board;
+  var diagonalBoard = [];
 
 }
+
+function buildSlashBoard() {
+  var board = currentGame.board;
+  var slashBoard = [];
+
+  var cols = 7;
+  var rows = 6;
+  var min = 4;
+
+  for (var i = ((rows - min) + 1); i < rows; i++) {
+
+
+
+  }
+
+}
+
 
 
 
@@ -56,11 +121,6 @@ function evaluateWinner() {
 Game.prototype.updateBoardArray = function() {
   row = currentGame.lowestOpenRow();
   col = parseInt(clickedColumn);
-
-  // console.log("Board before updating: ");
-  // console.log(currentGame.board);
-  // console.log("Row is: " + row + ", Col is: " + col + ", Player is: " + player);
-
   currentGame.board[row][col] = player;
 }
 
