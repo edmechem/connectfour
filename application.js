@@ -168,30 +168,27 @@ function reverseBoard(board) {
 }
 
 function diagonalize(board) {
-  newBoard = [];
-
-  // numRows = board.length;    // 6
-  // numCols = board[0].length; // 7
-  // constraint = 4;
+  // var newBoard = [];
+  // var numRows = board.length;    // 6
+  // var numCols = board[0].length; // 7
+  // var constraint = 4;
   // ultimately, the more scalable solution would do nested loops using vars above;
-  // for now we'll manually build it.
+  // for now we'll manually build it:
 
-  row1 = [
+  var row1 = [
     board[3][0],
     board[2][1],
     board[1][2],
     board[0][3]
   ]
-
-  row2 = [
+  var row2 = [
     board[4][0],
     board[3][1],
     board[2][2],
     board[1][3],
     board[0][4]
   ]
-
-  row3 = [
+  var row3 = [
     board[5][0],
     board[4][1],
     board[3][2],
@@ -199,8 +196,7 @@ function diagonalize(board) {
     board[1][4],
     board[0][5]
   ]
-
-  row4 = [
+  var row4 = [
     board[5][1],
     board[4][2],
     board[3][3],
@@ -208,22 +204,18 @@ function diagonalize(board) {
     board[1][5],
     board[0][6]
   ]
-
-  row5 = [
+  var row5 = [
     board[5][2],
     board[4][3],
     board[3][4],
     board[2][5],
     board[1][6]
   ]
-
-  row6 = [
+  var row6 = [
     board[5][3],
     board[4][4],
     board[3][5],
     board[2][6]
   ]
-
-  newBoard = [row1, row2, row3, row4, row5, row6]
-  return newBoard;
+  return [row1, row2, row3, row4, row5, row6]
 }
