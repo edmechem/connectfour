@@ -1,18 +1,18 @@
-$(document).ready(function(){
-  var game = new Game;
+$(document).ready(function() {
+  new Game;
 });
 
-var Game = function() {
-  currentGame = this;
-  currentGame.winner = "";
-  currentGame.errorMessage = "";
+function Game() {
+  game = this;
+  game.winner = "";
+  game.errorMessage = "";
   buildBoardArray();
   evaluateTurnUpdateStatus();
   clickHandler();
 };
 
 function buildBoardArray() {
-  currentGame.board = [
+  game.board = [
     ["", "", "", "", "", "", ""],
     ["", "", "", "", "", "", ""],
     ["", "", "", "", "", "", ""],
@@ -22,10 +22,10 @@ function buildBoardArray() {
   ];
 };
 
-function evaluateTurnUpdateStatus () {
+function evaluateTurnUpdateStatus() {
   player = whoseTurn();
-  if (currentGame.errorMessage != "") {
-    updateStatusMessage(currentGame.errorMessage);
+  if (game.errorMessage != "") {
+    updateStatusMessage(game.errorMessage);
   } else {
     var statusMessage = "";
     player == "R" ? statusMessage = "Red, " : statusMessage = "Black, ";
@@ -35,8 +35,8 @@ function evaluateTurnUpdateStatus () {
   updateMiniPiece(player);
 }
 
-function whoseTurn () {
-  var flattenedBoard = [].concat.apply([], currentGame.board);
+function whoseTurn() {
+  var flattenedBoard = [].concat.apply([], game.board);
   var redCount = flattenedBoard.filter(function(piece) { return piece == "R" }).length;
   var blackCount = flattenedBoard.filter(function(piece) { return piece == "B" }).length;
   return redCount <= blackCount ? "R" : "B";
@@ -58,10 +58,10 @@ function updateMiniPiece(player) {
   }
 }
 
-function clickHandler () {
+function clickHandler() {
   $(".piece").on("click", function(event) {
       event.preventDefault();
-      if (currentGame.winner == "") {
+      if (game.winner == "") {
         var clickedPiece = $(this)[0];
         var clickedClass = $(clickedPiece).attr("class");
         var clickedColumn = clickedClass.charAt(clickedClass.indexOf("col") + 3);
@@ -70,14 +70,14 @@ function clickHandler () {
         if (!isValid) {
           displayInvalidColumnMessage();
         } else {
-          currentGame.errorMessage = "";
+          game.errorMessage = "";
           placePiece(clickedColumn, columnValues);
           updateBoardArray(clickedColumn, columnValues);
         }
         evaluateWinner();
-        if (currentGame.winner != "") {
-          console.log("Winner is: " + currentGame.winner)
-          updateStatusMessage("Congratulations, " + currentGame.winner + "! You Win!");
+        if (game.winner != "") {
+          console.log("Winner is: " + game.winner)
+          updateStatusMessage("Congratulations, " + game.winner + "! You Win!");
         } else {
           evaluateTurnUpdateStatus();
         }
@@ -87,7 +87,7 @@ function clickHandler () {
 
 function getColumnValues(column) {
   outputColumn = [];
-  currentGame.board.forEach(function(row){outputColumn.push(row[column]);})
+  game.board.forEach(function(row){outputColumn.push(row[column]);})
   return outputColumn;
 };
 
@@ -97,10 +97,10 @@ function isValidColumn(columnValues) {
 };
 
 function displayInvalidColumnMessage() {
-  if (currentGame.errorMessage == "") {
-    player == 'R' ? currentGame.errorMessage += "Red, " : currentGame.errorMessage += "Black, ";
-    currentGame.errorMessage += "the column's full! Try a different one :)";
-    currentGame.updateStatusMessage(currentGame.errorMessage);
+  if (game.errorMessage == "") {
+    player == 'R' ? game.errorMessage += "Red, " : game.errorMessage += "Black, ";
+    game.errorMessage += "the column's full! Try a different one :)";
+    game.updateStatusMessage(game.errorMessage);
   }
 };
 
@@ -127,24 +127,23 @@ function lowestOpenRow(columnValues) {
 function updateBoardArray(clickedColumn, columnValues) {
   row = lowestOpenRow(columnValues);
   col = parseInt(clickedColumn);
-  currentGame.board[row][col] = player;
+  game.board[row][col] = player;
 }
 
 function evaluateWinner() {
-  evaluateWin(currentGame.board);                             // horizontal
-  evaluateWin(transpose(currentGame.board));                  // vertical
-  evaluateWin(diagonalize(currentGame.board));                // forward-slash diagonal
-  evaluateWin(diagonalize(reverseBoard(currentGame.board)));  // back-slash diagonal
+  evaluateWin(game.board);                             // horizontal
+  evaluateWin(transpose(game.board));                  // vertical
+  evaluateWin(diagonalize(game.board));                // forward-slash diagonal
+  evaluateWin(diagonalize(reverseBoard(game.board)));  // back-slash diagonal
 }
 
 function evaluateWin(board) {
   board.forEach(function(row){
     rowString = row.join('.');
-    // console.log(rowString);
     if (rowString.indexOf("R.R.R.R") != -1) {
-      currentGame.winner = "Red";
+      game.winner = "Red";
     } else if (rowString.indexOf("B.B.B.B") != -1) {
-      currentGame.winner = "Black";
+      game.winner = "Black";
     }
   })
 }
@@ -168,54 +167,24 @@ function reverseBoard(board) {
 }
 
 function diagonalize(board) {
-  // var newBoard = [];
-  // var numRows = board.length;    // 6
-  // var numCols = board[0].length; // 7
-  // var constraint = 4;
-  // ultimately, the more scalable solution would do nested loops using vars above;
-  // for now we'll manually build it:
-
-  var row1 = [
-    board[3][0],
-    board[2][1],
-    board[1][2],
-    board[0][3]
-  ]
-  var row2 = [
-    board[4][0],
-    board[3][1],
-    board[2][2],
-    board[1][3],
-    board[0][4]
-  ]
-  var row3 = [
-    board[5][0],
-    board[4][1],
-    board[3][2],
-    board[2][3],
-    board[1][4],
-    board[0][5]
-  ]
-  var row4 = [
-    board[5][1],
-    board[4][2],
-    board[3][3],
-    board[2][4],
-    board[1][5],
-    board[0][6]
-  ]
-  var row5 = [
-    board[5][2],
-    board[4][3],
-    board[3][4],
-    board[2][5],
-    board[1][6]
-  ]
-  var row6 = [
-    board[5][3],
-    board[4][4],
-    board[3][5],
-    board[2][6]
-  ]
+  var row1 = [ board[3][0], board[2][1], board[1][2], board[0][3] ]
+  var row2 = [ board[4][0], board[3][1], board[2][2], board[1][3], board[0][4] ]
+  var row3 = [ board[5][0], board[4][1], board[3][2], board[2][3], board[1][4], board[0][5] ]
+  var row4 = [ board[5][1], board[4][2], board[3][3], board[2][4], board[1][5], board[0][6] ]
+  var row5 = [ board[5][2], board[4][3], board[3][4], board[2][5], board[1][6] ]
+  var row6 = [ board[5][3], board[4][4], board[3][5], board[2][6] ]
   return [row1, row2, row3, row4, row5, row6]
 }
+
+
+// As seen above, we're manually diagonalizing.
+// A more scalable solution would use nested loops & multiple counters;
+// beginning code below:
+//
+// function diagonalize(board) {
+//   var newBoard = [];
+//   var numRows = board.length;    // 6
+//   var numCols = board[0].length; // 7
+//   var constraint = 4;
+//   // etc.
+// }
