@@ -23,16 +23,16 @@ function buildBoardArray() {
 };
 
 function evaluateTurnUpdateStatus() {
-  player = whoseTurn();
+  game.player = whoseTurn();
   if (game.errorMessage != "") {
     updateStatusMessage(game.errorMessage);
   } else {
     var statusMessage = "";
-    player == "R" ? statusMessage = "Red, " : statusMessage = "Black, ";
+    game.player == "R" ? statusMessage = "Red, " : statusMessage = "Black, ";
     statusMessage += "it's your turn! Click a column to play your piece."
     updateStatusMessage(statusMessage);
   };
-  updateMiniPiece(player);
+  updateMiniPiece();
 }
 
 function whoseTurn() {
@@ -50,16 +50,16 @@ function updateStatusMessage(statusMessage) {
   $('.status_message').text(statusMessage);
 };
 
-function updateMiniPiece(player) {
-  if (player == "R") {
+function updateMiniPiece() {
+  if (game.player == "R") {
     $(".mini_piece").removeClass("white");
     $(".mini_piece").removeClass("black");
     $(".mini_piece").addClass("red")
-  } else if (player == "B") {
+  } else if (game.player == "B") {
     $(".mini_piece").removeClass("white");
     $(".mini_piece").removeClass("red");
     $(".mini_piece").addClass("black")
-  } else if (player == "S") {
+  } else if (game.player == "S") {
     $(".mini_piece").removeClass("red");
     $(".mini_piece").removeClass("black");
     $(".mini_piece").addClass("white")
@@ -85,8 +85,9 @@ function clickHandler() {
         evaluateWinnerStalemate();
         if (game.winner != "") {
           if (game.winner == "stalemate") {
-            updateMiniPiece("S");
-            updateStatusMessage("Stalemate! No one wins.")
+            game.player = "S";
+            updateMiniPiece();
+            updateStatusMessage("Stalemate! No one wins.");
           } else {
             updateStatusMessage("Congratulations, " + game.winner + "! You Win!");
           }
@@ -110,17 +111,17 @@ function isValidColumn(columnValues) {
 
 function displayInvalidColumnMessage() {
   if (game.errorMessage == "") {
-    player == 'R' ? game.errorMessage += "Red, " : game.errorMessage += "Black, ";
+    game.player == 'R' ? game.errorMessage += "Red, " : game.errorMessage += "Black, ";
     game.errorMessage += "the column's full! Try a different one :)";
     updateStatusMessage(game.errorMessage);
   }
 };
 
 function placePiece(clickedColumn, columnValues) {
-  row = "row" + lowestOpenRow(columnValues);
-  col = "col" + clickedColumn;
-  cssSelector = "." + row + "." + col;
-  if (player == "R") {
+  var row = "row" + lowestOpenRow(columnValues);
+  var col = "col" + clickedColumn;
+  var cssSelector = "." + row + "." + col;
+  if (game.player == "R") {
     $(cssSelector).removeClass("white");
     $(cssSelector).addClass("red");
   } else {
@@ -137,9 +138,9 @@ function lowestOpenRow(columnValues) {
 };
 
 function updateBoardArray(clickedColumn, columnValues) {
-  row = lowestOpenRow(columnValues);
-  col = parseInt(clickedColumn);
-  game.board[row][col] = player;
+  var row = lowestOpenRow(columnValues);
+  var col = parseInt(clickedColumn);
+  game.board[row][col] = game.player;
 }
 
 function evaluateWinnerStalemate() {
@@ -148,14 +149,6 @@ function evaluateWinnerStalemate() {
   evaluateWin(diagonalize(game.board));                // forward-slash diagonal
   evaluateWin(diagonalize(reverseBoard(game.board)));  // back-slash diagonal
   evaluateStalemate();
-}
-
-function evaluateStalemate() {
-  var flattenedBoard = flattenBoard();
-  var boardString = flattenedBoard.join('.');
-  if ((boardString.indexOf("..") == -1) && (boardString.slice(0,1) != ".")) {
-    game.winner = "stalemate";
-  }
 }
 
 function evaluateWin(board) {
@@ -167,6 +160,14 @@ function evaluateWin(board) {
       game.winner = "Black";
     }
   })
+}
+
+function evaluateStalemate() {
+  var flattenedBoard = flattenBoard();
+  var boardString = flattenedBoard.join('.');
+  if ((boardString.indexOf("..") == -1) && (boardString.slice(0,1) != ".")) {
+    game.winner = "stalemate";
+  }
 }
 
 function transpose(array) {
@@ -198,8 +199,8 @@ function diagonalize(board) {
 }
 
 // As seen above, we've manually built the diagonalized version of the board.
-// A more scalable solution would use nested loops & multiple counters;
-// beginning code below:
+// A more scalable solution (for board of x width & y height) would use
+// nested loops & multiple counters; beginning code below:
 //
 // function diagonalize(board) {
 //   var newBoard = [];
