@@ -36,11 +36,15 @@ function evaluateTurnUpdateStatus() {
 }
 
 function whoseTurn() {
-  var flattenedBoard = [].concat.apply([], game.board);
+  var flattenedBoard = flattenBoard();
   var redCount = flattenedBoard.filter(function(piece) { return piece == "R" }).length;
   var blackCount = flattenedBoard.filter(function(piece) { return piece == "B" }).length;
   return redCount <= blackCount ? "R" : "B";
 };
+
+function flattenBoard() {
+  return [].concat.apply([], game.board);
+}
 
 function updateStatusMessage(statusMessage) {
   $('.status_message').text(statusMessage);
@@ -51,10 +55,14 @@ function updateMiniPiece(player) {
     $(".mini_piece").removeClass("white");
     $(".mini_piece").removeClass("black");
     $(".mini_piece").addClass("red")
-  } else {
+  } else if (player == "B") {
     $(".mini_piece").removeClass("white");
     $(".mini_piece").removeClass("red");
     $(".mini_piece").addClass("black")
+  } else if (player == "S") {
+    $(".mini_piece").removeClass("red");
+    $(".mini_piece").removeClass("black");
+    $(".mini_piece").addClass("white")
   }
 }
 
@@ -74,10 +82,14 @@ function clickHandler() {
           placePiece(clickedColumn, columnValues);
           updateBoardArray(clickedColumn, columnValues);
         }
-        evaluateWinner();
+        evaluateWinnerStalemate();
         if (game.winner != "") {
-          console.log("Winner is: " + game.winner)
-          updateStatusMessage("Congratulations, " + game.winner + "! You Win!");
+          if (game.winner == "stalemate") {
+            updateMiniPiece("S");
+            updateStatusMessage("Stalemate! No one wins.")
+          } else {
+            updateStatusMessage("Congratulations, " + game.winner + "! You Win!");
+          }
         } else {
           evaluateTurnUpdateStatus();
         }
@@ -100,7 +112,7 @@ function displayInvalidColumnMessage() {
   if (game.errorMessage == "") {
     player == 'R' ? game.errorMessage += "Red, " : game.errorMessage += "Black, ";
     game.errorMessage += "the column's full! Try a different one :)";
-    game.updateStatusMessage(game.errorMessage);
+    updateStatusMessage(game.errorMessage);
   }
 };
 
@@ -130,16 +142,25 @@ function updateBoardArray(clickedColumn, columnValues) {
   game.board[row][col] = player;
 }
 
-function evaluateWinner() {
+function evaluateWinnerStalemate() {
   evaluateWin(game.board);                             // horizontal
   evaluateWin(transpose(game.board));                  // vertical
   evaluateWin(diagonalize(game.board));                // forward-slash diagonal
   evaluateWin(diagonalize(reverseBoard(game.board)));  // back-slash diagonal
+  evaluateStalemate();
+}
+
+function evaluateStalemate() {
+  var flattenedBoard = flattenBoard();
+  var boardString = flattenedBoard.join('.');
+  if ((boardString.indexOf("..") == -1) && (boardString.slice(0,1) != ".")) {
+    game.winner = "stalemate";
+  }
 }
 
 function evaluateWin(board) {
   board.forEach(function(row){
-    rowString = row.join('.');
+    var rowString = row.join('.');
     if (rowString.indexOf("R.R.R.R") != -1) {
       game.winner = "Red";
     } else if (rowString.indexOf("B.B.B.B") != -1) {
@@ -176,8 +197,7 @@ function diagonalize(board) {
   return [row1, row2, row3, row4, row5, row6]
 }
 
-
-// As seen above, we're manually diagonalizing.
+// As seen above, we've manually built the diagonalized version of the board.
 // A more scalable solution would use nested loops & multiple counters;
 // beginning code below:
 //
