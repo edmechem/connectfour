@@ -5,7 +5,8 @@ $(document).ready(function() {
 function Game() {
   game = this;
   game.winner = "";
-  game.errorMessage = "";
+  game.errorMessageOne = "";
+  game.errorMessageTwo = "";
   buildBoardArray();
   evaluateTurnUpdateStatus();
   clickHandler();
@@ -24,13 +25,14 @@ function buildBoardArray() {
 
 function evaluateTurnUpdateStatus() {
   game.player = whoseTurn();
-  if (game.errorMessage != "") {
-    updateStatusMessage(game.errorMessage);
+  if (game.errorMessageOne != "") {
+    updateStatusMessages(game.errorMessageOne, game.errorMessageTwo);
   } else {
-    var statusMessage = "";
-    game.player == "R" ? statusMessage = "Red, " : statusMessage = "Black, ";
-    statusMessage += "it's your turn! Click a column to play your piece."
-    updateStatusMessage(statusMessage);
+    var statusMessageOne = "";
+    game.player == "R" ? statusMessageOne = "Red, " : statusMessageOne = "Black, ";
+    statusMessageOne += "it's your turn!"
+    statusMessageTwo = "Click a column to play your piece."
+    updateStatusMessages(statusMessageOne, statusMessageTwo);
   };
   updateMiniPiece();
 }
@@ -46,8 +48,9 @@ function flattenBoard() {
   return [].concat.apply([], game.board);
 }
 
-function updateStatusMessage(statusMessage) {
-  $('.status_message').text(statusMessage);
+function updateStatusMessages(statusMessageOne, statusMessageTwo) {
+  $('.status_message_one').text(statusMessageOne);
+  $('.status_message_two').text(statusMessageTwo);
 };
 
 function updateMiniPiece() {
@@ -78,7 +81,8 @@ function clickHandler() {
         if (!isValid) {
           displayInvalidColumnMessage();
         } else {
-          game.errorMessage = "";
+          game.errorMessageOne = "";
+          game.errorMessageTwo = "";
           placePiece(clickedColumn, columnValues);
           updateBoardArray(clickedColumn, columnValues);
         }
@@ -87,9 +91,9 @@ function clickHandler() {
           if (game.winner == "stalemate") {
             game.player = "S";
             updateMiniPiece();
-            updateStatusMessage("Stalemate! No one wins.");
+            updateStatusMessages("Stalemate!", "No one wins.");
           } else {
-            updateStatusMessage("Congratulations, " + game.winner + "! You Win!");
+            updateStatusMessages("Congratulations, " + game.winner + "!", "You Win!");
           }
         } else {
           evaluateTurnUpdateStatus();
@@ -110,10 +114,11 @@ function isValidColumn(columnValues) {
 };
 
 function displayInvalidColumnMessage() {
-  if (game.errorMessage == "") {
-    game.player == 'R' ? game.errorMessage += "Red, " : game.errorMessage += "Black, ";
-    game.errorMessage += "the column's full! Try a different one :)";
-    updateStatusMessage(game.errorMessage);
+  if (game.errorMessageOne == "") {
+    game.player == 'R' ? game.errorMessageOne += "Red, " : game.errorMessageOne += "Black, ";
+    game.errorMessageOne += "the column's full!";
+    game.errorMessageTwo = "Try a different one :)";
+    updateStatusMessages(game.errorMessageOne, game.errorMessageTwo);
   }
 };
 
