@@ -4,6 +4,23 @@
 	font-family: "Helvetica", Helvetica, Sans-Serif;
 }
 
+h1 {
+	margin-top: 15px;
+	margin-bottom: 30px;
+}
+
+h4.status_message_one {
+	font-size: 150%;
+	margin-top: 10px;
+	margin-bottom: 0px;
+}
+
+h4.status_message_two {
+	font-size: 150%;
+	margin-top: 0px;
+	margin-bottom: 30px;
+}
+
 .table {
 	margin: 20px auto;
 	padding: 10px;
