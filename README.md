@@ -2,6 +2,11 @@
 
 Implementation of [Connect Four](https://en.wikipedia.org/wiki/Connect_Four) using JavaScript, CSS & HTML.  
 
+[Playable game](https://edmechem.github.io/connectfour/index.html) on GitHub.
+
+[![Connect Four Screenshot](connectfour.jpg)](https://edmechem.github.io/connectfour/index.html)
+
+
 ## Minimum Viable Product
 
 * A user can see a board
